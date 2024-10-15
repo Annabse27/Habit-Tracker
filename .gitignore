@@ -1,0 +1,41 @@
+#Этот `.gitignore` включает игнорирование всех временных файлов Python,
+#миграций Django, локальных виртуальных окружений, файлов конфигурации Docker,
+#а также данных Postgres и Redis.
+
+# Игнорирование системных файлов
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+env/
+env.bak/
+venv/
+*.sqlite3
+db.sqlite3
+
+# Игнорирование файлов конфигурации IDE
+.idea/
+.vscode/
+
+# Игнорирование системных файлов
+.DS_Store
+Thumbs.db
+
+# Логи и временные файлы
+*.log
+*.pot
+*.mo
+*.swp
+*~
+*.sublime-project
+*.sublime-workspace
+
+# Игнорирование файлов окружения
+.env
+
+# Не игнорировать пример файла окружения
+!.env.example
+
+# Игнорирование Docker файлов
+docker-compose.override.yml
