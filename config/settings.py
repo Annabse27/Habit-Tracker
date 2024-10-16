@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from decouple import config
+from celery.schedules import crontab
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
     'users',
     'habits',
     'telegram_app',
+    'django_celery_beat'
 
 ]
 
@@ -133,4 +136,14 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-CELERY_BROKER_URL = config('REDIS_URL')
+#CELERY_BROKER_URL = config('REDIS_URL')
+CELERY_BROKER_URL = 'redis://redis:6379/0'  # ваш брокер для Celery
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'  # хранение результатов задач
+
+
+CELERY_BEAT_SCHEDULE = {
+       'update-next-reminder-every-day': {
+           'task': 'habits.tasks.update_next_reminder',
+           'schedule': crontab(hour=0, minute=0),  # Задача будет запускаться каждый день в полночь
+       },
+   }
