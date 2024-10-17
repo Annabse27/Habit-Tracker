@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
+from .validators import validate_duration, validate_frequency  # Импортируем валидаторы
 
 
 class Habit(models.Model):
@@ -13,9 +14,9 @@ class Habit(models.Model):
     is_pleasant = models.BooleanField(default=False, help_text="Это приятная привычка?")
     linked_habit = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='linked_to',
                                      help_text="Связанная привычка (для полезной привычки)")
-    frequency = models.PositiveIntegerField(default=1, help_text="Периодичность выполнения в днях")
+    frequency = models.PositiveIntegerField(default=1, help_text="Периодичность выполнения в днях", validators=[validate_frequency])
     reward = models.CharField(max_length=255, null=True, blank=True, help_text="Вознаграждение за выполнение")
-    duration = models.PositiveIntegerField(help_text="Время на выполнение в секундах")
+    duration = models.PositiveIntegerField(help_text="Время на выполнение в секундах", validators=[validate_duration])
     is_public = models.BooleanField(default=False, help_text="Привычка публичная?")
     next_reminder = models.DateTimeField(null=True, blank=True, help_text="Дата и время следующего напоминания")
 
@@ -52,7 +53,6 @@ class Habit(models.Model):
             timezone.datetime.combine(next_reminder_date, self.time)
         )
         self.save()
-
 
     def save(self, *args, **kwargs):
         """Логика для расчета первого напоминания"""

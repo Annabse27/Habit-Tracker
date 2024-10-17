@@ -1,7 +1,9 @@
+import logging
 from celery import shared_task
-from django.utils import timezone
 from .models import Habit
 
+# Настраиваем логгер для tasks
+logger = logging.getLogger(__name__)
 
 @shared_task
 def update_next_reminder(habit_id):
@@ -9,4 +11,4 @@ def update_next_reminder(habit_id):
         habit = Habit.objects.get(id=habit_id)
         habit.calculate_next_reminder()  # Обновляем дату следующего напоминания
     except Habit.DoesNotExist:
-        print(f'Habit with id {habit_id} does not exist')
+        logger.info(f'Habit with id {habit_id} does not exist')

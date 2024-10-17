@@ -1,9 +1,12 @@
 services:
      db:
-       image: postgres:latest
+       image: postgres
        restart: always
-       env_file:
-         - .env
+       environment:
+         - POSTGRES_DB=${POSTGRES_DB}
+         - POSTGRES_USER=${POSTGRES_USER}
+         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
        ports:
          - "5432:5432"
        volumes:
@@ -21,15 +24,22 @@ services:
          - "6379:6379"
 
      app:
-       build: .
-       command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+       depends_on:
+         db:
+           condition: service_healthy
+         redis:
+           condition: service_started
+       build:
+         context: .
+       command: ./wait-for-it.sh db:5432 -- python manage.py runserver 0.0.0.0:8000
+
+       #command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
        volumes:
          - .:/app
+         - ./logs:/app/logs  # Логи приложения
+
        ports:
          - "8000:8000"
-       depends_on:
-         - db
-         - redis
        env_file:
          - .env
 
@@ -53,7 +63,11 @@ services:
 
 
 volumes:
-     pg_data:
+  pg_data:  # Том для хранения данных PostgreSQL
+  logs:     # Том для хранения логов приложения
+
+
+
 
 
 

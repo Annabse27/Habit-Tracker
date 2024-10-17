@@ -13,10 +13,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from decouple import config
 from celery.schedules import crontab
-
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -43,7 +44,8 @@ INSTALLED_APPS = [
     'users',
     'habits',
     'telegram_app',
-    'django_celery_beat'
+    'django_celery_beat',
+    'drf_yasg',
 
 ]
 
@@ -82,15 +84,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-       'default': {
-           'ENGINE': 'django.db.backends.postgresql',
-           'NAME': config('POSTGRES_DB'),
-           'USER': config('POSTGRES_USER'),
-           'PASSWORD': config('POSTGRES_PASSWORD'),
-           'HOST': config('POSTGRES_HOST'),
-           'PORT': config('POSTGRES_PORT'),
-       }
-   }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('POSTGRES_DB'),
+        'USER': config('POSTGRES_USER'),
+        'PASSWORD': config('POSTGRES_PASSWORD'),
+        'HOST': '172.20.0.3',  # Заменить на реальный IP-адрес контейнера базы данных
+        'PORT': config('POSTGRES_PORT'),
+    }
+}
+
 
 
 
@@ -147,3 +150,27 @@ CELERY_BEAT_SCHEDULE = {
            'schedule': crontab(hour=0, minute=0),  # Задача будет запускаться каждый день в полночь
        },
    }
+
+'''LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/tmp/debug.log',  # Логируем во временную директорию
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+'''
