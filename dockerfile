@@ -23,5 +23,3 @@ RUN poetry config virtualenvs.create false \
 # Копируем все файлы проекта в контейнер
 COPY . .
 
-# Выполняем команды миграции и сбор статических файлов
-#CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"]

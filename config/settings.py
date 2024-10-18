@@ -29,7 +29,7 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 
 AUTH_USER_MODEL = 'users.CustomUser'
 # Application definition
@@ -89,7 +89,7 @@ DATABASES = {
         'NAME': config('POSTGRES_DB'),
         'USER': config('POSTGRES_USER'),
         'PASSWORD': config('POSTGRES_PASSWORD'),
-        'HOST': '172.20.0.3',  # Заменить на реальный IP-адрес контейнера базы данных
+        'HOST': config('POSTGRES_HOST'),
         'PORT': config('POSTGRES_PORT'),
     }
 }
@@ -151,26 +151,6 @@ CELERY_BEAT_SCHEDULE = {
        },
    }
 
-'''LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-        },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': '/tmp/debug.log',  # Логируем во временную директорию
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
-'''
+TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN')
+
+

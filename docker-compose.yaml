@@ -16,12 +16,18 @@ services:
          interval: 10s
          timeout: 5s
          retries: 5
+       networks:
+         - habittracker-net
 
      redis:
        image: redis:latest
        restart: always
        ports:
          - "6379:6379"
+       networks:
+         - habittracker-net
+
+
 
      app:
        depends_on:
@@ -42,6 +48,9 @@ services:
          - "8000:8000"
        env_file:
          - .env
+       networks:
+         - habittracker-net
+
 
      celery:
        build: .
@@ -51,6 +60,9 @@ services:
          - db
        env_file:
          - .env
+       networks:
+         - habittracker-net
+
 
      celery-beat:
        build: .
@@ -60,6 +72,8 @@ services:
          - db
        env_file:
          - .env
+       networks:
+         - habittracker-net
 
 
 volumes:
@@ -67,6 +81,9 @@ volumes:
   logs:     # Том для хранения логов приложения
 
 
+networks:
+  habittracker-net:
+    driver: bridge
 
 
 
