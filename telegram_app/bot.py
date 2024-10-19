@@ -15,7 +15,9 @@ async def start(update: Update, context):
     telegram_username = update.message.from_user.username
 
     # Сохраняем chat_id
-    user = CustomUser.objects.filter(telegram_username=telegram_username).first()  # Найдите пользователя по Telegram username
+    # Найдите пользователя по Telegram username
+    user = CustomUser.objects.filter(
+        telegram_username=telegram_username).first()
     if user:
         user.telegram_chat_id = chat_id
         user.save()

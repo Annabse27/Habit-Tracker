@@ -5,6 +5,7 @@ from .models import Habit
 # Настраиваем логгер для tasks
 logger = logging.getLogger(__name__)
 
+
 @shared_task
 def update_next_reminder(habit_id):
     try:

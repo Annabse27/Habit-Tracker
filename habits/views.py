@@ -2,6 +2,7 @@ from rest_framework import viewsets, permissions
 from .models import Habit
 from .serializers import HabitSerializer
 
+
 class HabitViewSet(viewsets.ModelViewSet):
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
@@ -18,4 +19,3 @@ class HabitViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         print(f'Updating habit for user: {self.request.user}')
         serializer.save(user=self.request.user)
-

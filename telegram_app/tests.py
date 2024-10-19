@@ -1,28 +1,31 @@
 from unittest.mock import patch, AsyncMock
-from telegram import Bot
 from django.test import TestCase
 from telegram_app.tasks import send_telegram_notification
 from users.models import CustomUser
 from django.apps import AppConfig
 import asyncio
-from telegram_app.apps import TelegramAppConfig
 from telegram_app.bot import setup_bot, start
 from django.conf import settings
+
 
 class TelegramNotificationTest(TestCase):
 
     def setUp(self):
         """Создаем пользователя с указанным chat_id"""
-        self.user = CustomUser.objects.create_user(email='test@example.com', password='password123')
+        self.user = CustomUser.objects.create_user(
+            email='test@example.com', password='password123')
         self.user.telegram_chat_id = '123456789'
         self.user.save()
 
     @patch('telegram_app.tasks.Bot')  # Мокаем Telegram Bot для проверки
     def test_send_telegram_notification(self, MockBot):
         """Тест отправки уведомлений через Telegram"""
-        send_telegram_notification(user_id=self.user.id, message="Test message")
+        send_telegram_notification(
+            user_id=self.user.id,
+            message="Test message")
         MockBot.assert_called_once_with(token=settings.TELEGRAM_BOT_TOKEN)
-        MockBot().send_message.assert_called_once_with(chat_id='123456789', text="Test message")
+        MockBot().send_message.assert_called_once_with(
+            chat_id='123456789', text="Test message")
 
     def test_no_chat_id(self):
         """Тест, если у пользователя нет telegram_chat_id"""
@@ -30,7 +33,8 @@ class TelegramNotificationTest(TestCase):
         self.user.save()
 
         with patch('telegram_app.tasks.Bot') as MockBot:
-            send_telegram_notification(user_id=self.user.id, message="Test message")
+            send_telegram_notification(
+                user_id=self.user.id, message="Test message")
             MockBot().send_message.assert_not_called()
 
     @patch('telegram_app.tasks.Bot')
@@ -38,7 +42,9 @@ class TelegramNotificationTest(TestCase):
         """Тест отправки уведомления несуществующему пользователю"""
         invalid_user_id = 9999
         with self.assertLogs('telegram_app.tasks', level='WARNING') as log:
-            send_telegram_notification(user_id=invalid_user_id, message="Test message")
+            send_telegram_notification(
+                user_id=invalid_user_id,
+                message="Test message")
             self.assertIn('Пользователь с ID 9999 не найден', log.output[0])
 
     def test_task_execution(self):
@@ -57,8 +63,12 @@ class TelegramNotificationTest(TestCase):
     def test_send_notification_with_special_characters(self, MockBot):
         """Тест отправки уведомления с специальными символами"""
         special_message = "Test & * $ # @!"
-        send_telegram_notification(user_id=self.user.id, message=special_message)
-        MockBot().send_message.assert_called_once_with(chat_id='123456789', text=special_message)
+        send_telegram_notification(
+            user_id=self.user.id,
+            message=special_message)
+        MockBot().send_message.assert_called_once_with(
+            chat_id='123456789', text=special_message)
+
 
 class TelegramAppConfig(AppConfig):
     name = 'telegram_app'
@@ -72,12 +82,14 @@ class TelegramAppConfig(AppConfig):
             asyncio.set_event_loop(loop)
         loop.create_task(setup_bot())
 
+
 class TelegramAppConfigTest(TestCase):
 
     @patch('telegram_app.bot.setup_bot')  # Мокаем функцию setup_bot
     def test_ready_method(self, mock_setup_bot):
         """Тестируем, что метод ready вызывает setup_bot."""
-        # Получаем экземпляр класса TelegramAppConfig и вызываем его метод ready
+        # Получаем экземпляр класса TelegramAppConfig и вызываем его метод
+        # ready
         app_config = TelegramAppConfig.create('telegram_app')
 
         # Вызываем метод ready() вручную
@@ -86,18 +98,21 @@ class TelegramAppConfigTest(TestCase):
         # Проверяем, что setup_bot был вызван
         mock_setup_bot.assert_called_once()
 
+
 class TelegramAppTestCase(TestCase):
 
     def setUp(self):
         self.user = CustomUser.objects.create_user(
-            email='test@example.com', password='password123', telegram_chat_id='123456789'
-        )
+            email='test@example.com',
+            password='password123',
+            telegram_chat_id='123456789')
 
     @patch('telegram_app.tasks.Bot')
     def test_send_telegram_notification(self, MockBot):
         """Тест успешной отправки уведомления через Telegram."""
         send_telegram_notification(self.user.id, "Test message")
-        MockBot().send_message.assert_called_once_with(chat_id='123456789', text="Test message")
+        MockBot().send_message.assert_called_once_with(
+            chat_id='123456789', text="Test message")
 
     def test_user_not_found(self):
         """Тест на случай, если пользователь не найден."""
@@ -127,11 +142,15 @@ class TelegramAppTestCase(TestCase):
     async def test_start_command(self, MockUpdate, MockCustomUser):
         """Тест команды /start"""
         # Настройка мока пользователя
-        user = AsyncMock(telegram_username='test_user', email='test@example.com')
+        user = AsyncMock(
+            telegram_username='test_user',
+            email='test@example.com')
         MockCustomUser.objects.filter.return_value.first.return_value = user
 
         # Настройка мока сообщения
-        mock_message = AsyncMock(chat_id='123456', from_user=AsyncMock(username='test_user'))
+        mock_message = AsyncMock(
+            chat_id='123456', from_user=AsyncMock(
+                username='test_user'))
         MockUpdate.message = mock_message
 
         # Вызываем команду /start

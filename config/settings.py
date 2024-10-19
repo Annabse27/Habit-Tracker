@@ -10,14 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
 from decouple import config
 from celery.schedules import crontab
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 
 # Quick-start development settings - unsuitable for production
@@ -96,8 +94,6 @@ DATABASES = {
 }
 
 
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -140,25 +136,26 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-#CELERY_BROKER_URL = config('REDIS_URL')
+# CELERY_BROKER_URL = config('REDIS_URL')
 CELERY_BROKER_URL = 'redis://redis:6379/0'  # ваш брокер для Celery
 CELERY_RESULT_BACKEND = 'redis://redis:6379/0'  # хранение результатов задач
 
 
 CELERY_BEAT_SCHEDULE = {
-       'update-next-reminder-every-day': {
-           'task': 'habits.tasks.update_next_reminder',
-           'schedule': crontab(hour=0, minute=0),  # Задача будет запускаться каждый день в полночь
-       },
-   }
+    'update-next-reminder-every-day': {
+        'task': 'habits.tasks.update_next_reminder',
+        # Задача будет запускаться каждый день в полночь
+        'schedule': crontab(hour=0, minute=0),
+    },
+}
 
 TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN')
 
 
 REST_FRAMEWORK = {
-       'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-       'PAGE_SIZE': 5  # Выводить по 5 привычек на страницу
-   }
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5  # Выводить по 5 привычек на страницу
+}
 
 
 CORS_ALLOW_ALL_ORIGINS = True

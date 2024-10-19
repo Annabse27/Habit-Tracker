@@ -5,7 +5,6 @@ from django.urls import reverse
 from rest_framework import status
 
 
-
 class TestUserModel(TestCase):
     """
     Тесты для модели CustomUser.
@@ -27,7 +26,8 @@ class TestUserModel(TestCase):
     def test_create_superuser(self):
         """
         Тест на создание суперпользователя.
-        Проверяет, что суперпользователь создается с флагами is_superuser и is_staff, а также корректным паролем.
+        Проверяет, что суперпользователь создается с флагами is_superuser и is_staff,
+        а также корректным паролем.
         """
         superuser = CustomUser.objects.create_superuser(
             email="admin@example.com",
@@ -48,7 +48,8 @@ class TestUserModel(TestCase):
             password="password123",
             telegram_chat_id="123456789"
         )
-        with self.assertRaises(Exception):  # Укажите конкретное исключение, если известно
+        # Укажите конкретное исключение, если известно
+        with self.assertRaises(Exception):
             CustomUser.objects.create_user(
                 email="test@example.com",
                 password="password123",
@@ -64,12 +65,14 @@ class TestUserModel(TestCase):
             email="test2@example.com",
             password="password123"
         )
-        self.assertEqual(user.telegram_chat_id, None)  # Проверка на отсутствие telegram_chat_id
+        # Проверка на отсутствие telegram_chat_id
+        self.assertEqual(user.telegram_chat_id, None)
 
     def test_invalid_email(self):
         """
         Тест на валидацию email.
-        Проверяет, что при попытке создания пользователя с некорректным email выбрасывается ошибка ValueError.
+        Проверяет, что при попытке создания пользователя с некорректным email
+        выбрасывается ошибка ValueError.
         """
         with self.assertRaises(ValueError):
             CustomUser.objects.create_user(
@@ -119,7 +122,6 @@ class TestUserModel(TestCase):
         self.assertEqual(user.telegram_username, "user_telegram")
         self.assertEqual(user.telegram_chat_id, "987654321")
 
-
     def test_create_superuser_with_invalid_is_staff(self):
         """Проверяет, что нельзя создать суперпользователя без флага is_staff."""
         with self.assertRaises(ValueError):
@@ -128,7 +130,6 @@ class TestUserModel(TestCase):
                 password="password123",
                 is_staff=False
             )
-
 
     def test_create_superuser_with_invalid_is_superuser(self):
         """Проверяет, что нельзя создать суперпользователя без флага is_superuser."""
@@ -164,7 +165,6 @@ class TestUserModel(TestCase):
         )
         self.assertEqual(user.telegram_chat_id, "123456789")
 
-
     def test_telegram_chat_id_is_none(self):
         """Тест на проверку отсутствия telegram_chat_id."""
         user = CustomUser.objects.create_user(
@@ -186,4 +186,6 @@ class UserRegistrationTest(APITestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(CustomUser.objects.count(), 1)
-        self.assertEqual(CustomUser.objects.get().email, 'testuser@example.com')
+        self.assertEqual(
+            CustomUser.objects.get().email,
+            'testuser@example.com')

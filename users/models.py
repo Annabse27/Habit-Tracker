@@ -13,7 +13,8 @@ class CustomUserManager(BaseUserManager):
             raise ValueError(_('Поле Email обязательно.'))
 
         if not password:
-            raise ValueError(_('Поле Пароль обязательно.'))  # Добавим это условие
+            raise ValueError(_('Поле Пароль обязательно.')
+                             )  # Добавим это условие
 
         # Простая проверка на корректность email
         if '@' not in email:
@@ -23,7 +24,8 @@ class CustomUserManager(BaseUserManager):
 
         # Проверка на дубликат email
         if CustomUser.objects.filter(email=email).exists():
-            raise ValidationError(_('Пользователь с таким email уже существует.'))
+            raise ValidationError(
+                _('Пользователь с таким email уже существует.'))
 
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
@@ -31,7 +33,8 @@ class CustomUserManager(BaseUserManager):
         try:
             user.save(using=self._db)
         except IntegrityError:
-            raise ValidationError(_('Не удалось создать пользователя. Пользователь с таким email уже существует.'))
+            raise ValidationError(
+                _('Не удалось создать пользователя. Пользователь с таким email уже существует.'))
 
         return user
 
@@ -40,9 +43,11 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
 
         if extra_fields.get('is_staff') is not True:
-            raise ValueError(_('Суперпользователь должен иметь is_staff=True.'))
+            raise ValueError(
+                _('Суперпользователь должен иметь is_staff=True.'))
         if extra_fields.get('is_superuser') is not True:
-            raise ValueError(_('Суперпользователь должен иметь is_superuser=True.'))
+            raise ValueError(
+                _('Суперпользователь должен иметь is_superuser=True.'))
 
         return self.create_user(email, password, **extra_fields)
 
@@ -50,11 +55,8 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     """Кастомная модель пользователя с аутентификацией по Email."""
 
-    email = models.EmailField(
-        _('email address'),
-        unique=True,
-        help_text=_('Введите ваш действующий email. Используется для аутентификации.')
-    )
+    email = models.EmailField(_('email address'), unique=True, help_text=_(
+        'Введите ваш действующий email. Используется для аутентификации.'))
     phone_number = models.CharField(
         max_length=15,
         blank=True,
@@ -74,16 +76,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         blank=True,
         null=True,
         verbose_name='Telegram Chat ID',
-        help_text=_('Чат ID используется для отправки уведомлений через Telegram.')
-    )
-    is_active = models.BooleanField(
-        default=True,
-        help_text=_('Указывает, активен ли пользователь. Отключите это поле вместо удаления аккаунта.')
-    )
-    is_staff = models.BooleanField(
-        default=False,
-        help_text=_('Определяет, имеет ли пользователь доступ к административной части сайта.')
-    )
+        help_text=_('Чат ID используется для отправки уведомлений через Telegram.'))
+    is_active = models.BooleanField(default=True, help_text=_(
+        'Указывает, активен ли пользователь. Отключите это поле вместо удаления аккаунта.'))
+    is_staff = models.BooleanField(default=False, help_text=_(
+        'Определяет, имеет ли пользователь доступ к административной части сайта.'))
     date_joined = models.DateTimeField(
         auto_now_add=True,
         help_text=_('Дата регистрации пользователя.')
@@ -101,4 +98,3 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
         ordering = ['email']
-

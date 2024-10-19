@@ -12,13 +12,9 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='habit',
-            name='duration',
-            field=models.PositiveIntegerField(help_text='Время на выполнение в секундах', validators=[habits.validators.validate_duration]),
-        ),
-        migrations.AlterField(
-            model_name='habit',
-            name='frequency',
-            field=models.PositiveIntegerField(default=1, help_text='Периодичность выполнения в днях', validators=[habits.validators.validate_frequency]),
-        ),
-    ]
+            model_name='habit', name='duration', field=models.PositiveIntegerField(
+                help_text='Время на выполнение в секундах', validators=[
+                    habits.validators.validate_duration]), ), migrations.AlterField(
+            model_name='habit', name='frequency', field=models.PositiveIntegerField(
+                default=1, help_text='Периодичность выполнения в днях', validators=[
+                    habits.validators.validate_frequency]), ), ]

@@ -22,21 +22,32 @@ from drf_yasg import openapi
 
 
 schema_view = get_schema_view(
-      openapi.Info(
-         title="API документация",
-         default_version='v1',
-         description="Описание вашего API",
-      ),
-      public=True,
-      permission_classes=(permissions.AllowAny,),
-   )
+    openapi.Info(
+        title="API документация",
+        default_version='v1',
+        description="Описание вашего API",
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('habits.urls')),  # подключаем маршруты для приложения habits
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    # подключаем маршруты для приложения habits
+    path('api/', include('habits.urls')),
+    path(
+        'swagger/',
+        schema_view.with_ui(
+            'swagger',
+            cache_timeout=0),
+        name='schema-swagger-ui'),
+    path(
+        'redoc/',
+        schema_view.with_ui(
+            'redoc',
+            cache_timeout=0),
+        name='schema-redoc'),
     path('api/users/', include('users.urls')),
 
 
