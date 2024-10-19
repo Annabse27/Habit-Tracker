@@ -1,5 +1,9 @@
 from django.test import TestCase
 from users.models import CustomUser
+from rest_framework.test import APITestCase
+from django.urls import reverse
+from rest_framework import status
+
 
 
 class TestUserModel(TestCase):
@@ -75,13 +79,111 @@ class TestUserModel(TestCase):
             )
 
     def test_str_representation(self):
-        """
-        Тест строкового представления пользователя.
-        Проверяет, что строковое представление пользователя соответствует его email.
-        """
+        """Тест строкового представления пользователя."""
         user = CustomUser.objects.create_user(
             email="test@example.com",
             password="password123",
             telegram_chat_id="123456789"
         )
         self.assertEqual(str(user), "test@example.com")
+
+    def test_user_permissions(self):
+        """Тест на наличие прав доступа у пользователя."""
+        user = CustomUser.objects.create_user(
+            email="user@example.com",
+            password="password123"
+        )
+        self.assertFalse(user.is_staff)
+        self.assertFalse(user.is_superuser)
+
+    def test_superuser_permissions(self):
+        """Тест на наличие прав доступа у суперпользователя."""
+        superuser = CustomUser.objects.create_superuser(
+            email="admin@example.com",
+            password="password123"
+        )
+        self.assertTrue(superuser.is_staff)
+        self.assertTrue(superuser.is_superuser)
+
+    def test_user_fields(self):
+        """Тест на наличие всех полей у пользователя."""
+        user = CustomUser.objects.create_user(
+            email="user@example.com",
+            password="password123",
+            phone_number="1234567890",
+            telegram_username="user_telegram",
+            telegram_chat_id="987654321"
+        )
+        self.assertEqual(user.email, "user@example.com")
+        self.assertEqual(user.phone_number, "1234567890")
+        self.assertEqual(user.telegram_username, "user_telegram")
+        self.assertEqual(user.telegram_chat_id, "987654321")
+
+
+    def test_create_superuser_with_invalid_is_staff(self):
+        """Проверяет, что нельзя создать суперпользователя без флага is_staff."""
+        with self.assertRaises(ValueError):
+            CustomUser.objects.create_superuser(
+                email="admin@example.com",
+                password="password123",
+                is_staff=False
+            )
+
+
+    def test_create_superuser_with_invalid_is_superuser(self):
+        """Проверяет, что нельзя создать суперпользователя без флага is_superuser."""
+        with self.assertRaises(ValueError):
+            CustomUser.objects.create_superuser(
+                email="admin@example.com",
+                password="password123",
+                is_superuser=False
+            )
+
+    def test_create_user_without_email(self):
+        """Тест на валидацию отсутствующего email."""
+        with self.assertRaises(ValueError):
+            CustomUser.objects.create_user(
+                email="",
+                password="password123"
+            )
+
+    def test_create_user_without_password(self):
+        """Тест на валидацию отсутствующего пароля."""
+        with self.assertRaises(ValueError):
+            CustomUser.objects.create_user(
+                email="test@example.com",
+                password=""  # Теперь это вызовет ошибку
+            )
+
+    def test_telegram_chat_id_is_valid(self):
+        """Тест на проверку валидного telegram_chat_id."""
+        user = CustomUser.objects.create_user(
+            email="test2@example.com",
+            password="password123",
+            telegram_chat_id="123456789"
+        )
+        self.assertEqual(user.telegram_chat_id, "123456789")
+
+
+    def test_telegram_chat_id_is_none(self):
+        """Тест на проверку отсутствия telegram_chat_id."""
+        user = CustomUser.objects.create_user(
+            email="test2@example.com",
+            password="password123"
+        )
+        self.assertIsNone(user.telegram_chat_id)
+
+
+class UserRegistrationTest(APITestCase):
+
+    def test_user_registration(self):
+        url = reverse('user-registration')
+        data = {
+            'email': 'testuser@example.com',
+            'password': 'password123',
+            'confirm_password': 'password123'
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(CustomUser.objects.count(), 1)
+        self.assertEqual(CustomUser.objects.get().email, 'testuser@example.com')

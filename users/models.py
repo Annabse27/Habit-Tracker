@@ -12,6 +12,9 @@ class CustomUserManager(BaseUserManager):
         if not email:
             raise ValueError(_('Поле Email обязательно.'))
 
+        if not password:
+            raise ValueError(_('Поле Пароль обязательно.'))  # Добавим это условие
+
         # Простая проверка на корректность email
         if '@' not in email:
             raise ValueError(_('Некорректный email адрес.'))

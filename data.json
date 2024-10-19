@@ -1,0 +1,80 @@
+[
+    {
+        "model": "users.customuser",
+        "pk": 1,
+        "fields": {
+            "email": "testuser1@example.com",
+            "password": "pbkdf2_sha256$260000$<hashed_password>",
+            "is_active": true,
+            "is_staff": false,
+            "is_superuser": false,
+            "date_joined": "2024-10-18T10:00:00Z",
+            "phone_number": "123456789",
+            "telegram_username": "testuser1",
+            "telegram_chat_id": "123456789"
+        }
+    },
+    {
+        "model": "users.customuser",
+        "pk": 2,
+        "fields": {
+            "email": "testuser2@example.com",
+            "password": "pbkdf2_sha256$260000$<hashed_password>",
+            "is_active": true,
+            "is_staff": false,
+            "is_superuser": false,
+            "date_joined": "2024-10-18T11:00:00Z",
+            "phone_number": "987654321",
+            "telegram_username": "testuser2",
+            "telegram_chat_id": "987654321"
+        }
+    },
+    {
+        "model": "habits.habit",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "action": "Прогулка",
+            "time": "09:00:00",
+            "place": "Парк",
+            "is_pleasant": false,
+            "frequency": 1,
+            "reward": "Чашка кофе",
+            "duration": 30,
+            "is_public": true,
+            "next_reminder": "2024-10-19T09:00:00Z"
+        }
+    },
+    {
+        "model": "habits.habit",
+        "pk": 2,
+        "fields": {
+            "user": 2,
+            "action": "Занятие йогой",
+            "time": "07:00:00",
+            "place": "Дом",
+            "is_pleasant": true,
+            "frequency": 2,
+            "reward": "Чтение книги",
+            "duration": 45,
+            "is_public": false,
+            "next_reminder": "2024-10-20T07:00:00Z"
+        }
+    },
+    {
+        "model": "habits.habit",
+        "pk": 3,
+        "fields": {
+            "user": 1,
+            "action": "Погрызть морковку",
+            "time": "16:00:00",
+            "place": "Кухня",
+            "is_pleasant": true,
+            "frequency": 3,
+            "reward": "Ощущение бытия пушистого зверька",
+            "duration": 10,
+            "is_public": true,
+            "next_reminder": "2024-10-20T16:00:00Z"
+        }
+    }
+]
