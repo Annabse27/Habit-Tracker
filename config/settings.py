@@ -46,12 +46,13 @@ INSTALLED_APPS = [
     'telegram_app',
     'django_celery_beat',
     'drf_yasg',
-
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # КОРС
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -160,3 +161,4 @@ REST_FRAMEWORK = {
    }
 
 
+CORS_ALLOW_ALL_ORIGINS = True
