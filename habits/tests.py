@@ -258,7 +258,7 @@ class WSGITestCase(SimpleTestCase):
 # Тесты для неавторизованных пользователей
 class HabitUnauthorizedAPITestCase(APITestCase):
     def setUp(self):
-        # Тестовые данные
+        # Определяем данные для привычки
         self.habit_data = {
             "action": "Прогулка",
             "time": "09:00:00",
@@ -266,33 +266,41 @@ class HabitUnauthorizedAPITestCase(APITestCase):
             "is_pleasant": False,
             "frequency": 1,
             "duration": 60,
-            "is_public": False,
+            "is_public": True,  # Делаем привычку публичной для теста публичного эндпоинта
         }
 
     def test_create_habit_unauthorized(self):
+        """Тест на создание привычки для неавторизованного пользователя"""
         response = self.client.post('/api/habits/', self.habit_data)
-
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_get_habits_unauthorized(self):
+        """Тест на получение списка привычек для неавторизованного пользователя"""
         response = self.client.get('/api/habits/')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_update_habit_unauthorized(self):
-        # Создаем пользователя
-        user = CustomUser.objects.create_user(
-            email='test@example.com', password='password123')
-        # Создаем привычку для теста
+        """Тест на обновление привычки для неавторизованного пользователя"""
+        user = CustomUser.objects.create_user(email='test@example.com', password='password123')
         habit = Habit.objects.create(user=user, **self.habit_data)
         update_data = {"action": "Пробежка"}
         response = self.client.put(f'/api/habits/{habit.id}/', update_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_delete_habit_unauthorized(self):
-        # Создаем пользователя
-        user = CustomUser.objects.create_user(
-            email='test@example.com', password='password123')
-        # Создаем привычку для теста
+        """Тест на удаление привычки для неавторизованного пользователя"""
+        user = CustomUser.objects.create_user(email='test@example.com', password='password123')
         habit = Habit.objects.create(user=user, **self.habit_data)
         response = self.client.delete(f'/api/habits/{habit.id}/')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_public_habits(self):
+        """Тест на получение списка публичных привычек через API для неавторизованного пользователя"""
+        # Создаем пользователя и привычку
+        user = CustomUser.objects.create_user(email='test@example.com', password='password123')
+        Habit.objects.create(user=user, **self.habit_data)
+
+        # Делаем запрос на получение списка публичных привычек
+        response = self.client.get('/api/habits/public/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertGreaterEqual(len(response.data), 1)
