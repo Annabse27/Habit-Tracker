@@ -3,6 +3,8 @@ from users.models import CustomUser
 from rest_framework.test import APITestCase
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.authtoken.models import Token
+
 
 
 class TestUserModel(TestCase):
@@ -189,3 +191,28 @@ class UserRegistrationTest(APITestCase):
         self.assertEqual(
             CustomUser.objects.get().email,
             'testuser@example.com')
+
+
+class UserLoginTestCase(APITestCase):
+
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(email='testuser@example.com', password='password123')
+        self.url = reverse('user-login')
+
+    def test_login_user(self):
+        data = {
+            'email': 'testuser@example.com',
+            'password': 'password123'
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('token', response.data)
+
+    def test_invalid_credentials(self):
+        data = {
+            'email': 'testuser@example.com',
+            'password': 'wrongpassword'
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('error', response.data)
