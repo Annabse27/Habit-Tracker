@@ -1,6 +1,6 @@
 from unittest.mock import patch, AsyncMock
 from django.test import TestCase
-from telegram_app.tasks import send_telegram_notification
+from telegram_app.tasks import send_telegram_notification, send_reminders
 from users.models import CustomUser
 from django.apps import AppConfig
 import asyncio
@@ -159,3 +159,19 @@ class TelegramAppTestCase(TestCase):
         # Проверяем, что chat_id пользователя был обновлен
         self.assertEqual(user.telegram_chat_id, '123456')
         user.save.assert_called_once()
+
+
+
+class CeleryTaskTest(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            email='test@example.com', password='password123', telegram_chat_id='123456789')
+
+    def test_send_reminders(self):
+        """
+        Тест на успешное выполнение задачи по отправке уведомлений
+        """
+        send_reminders()
+        # Здесь можно проверить лог или проверить, была ли вызвана отправка
+        # через моки.
+

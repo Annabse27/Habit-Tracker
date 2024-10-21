@@ -1,15 +1,17 @@
-from __future__ import absolute_import, unicode_literals
-import os
 from celery import Celery
 
-# устанавливаем переменную окружения Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+# Создаем экземпляр Celery
+app = Celery('proj', broker='redis://redis:6379/0')
 
-app = Celery('config')
+# Настраиваем Celery на использование асинхронного воркера gevent
+app.conf.update(
+    worker_concurrency=1,
+    task_always_eager=False,  # Обычные задачи через брокер
+    worker_pool='gevent',  # Используем gevent для поддержки асинхронности
+)
 
-# Настройки celery загружаются из django.conf:settings с пространством
-# имен "CELERY"
+# Загружаем конфигурацию из файла настроек Django с пространством имен 'CELERY'
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
-# Автоматически обнаруживаем задачи (tasks.py в каждом приложении)
+# Автоматически обнаруживаем задачи
 app.autodiscover_tasks()

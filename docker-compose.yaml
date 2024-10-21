@@ -54,7 +54,7 @@ services:
 
      celery:
        build: .
-       command: celery -A config worker --loglevel=INFO
+       command: celery -A config worker --loglevel=INFO -P gevent
        depends_on:
          - redis
          - db
@@ -62,6 +62,8 @@ services:
          - .env
        networks:
          - habittracker-net
+
+
 
 
      celery-beat:
