@@ -6,8 +6,13 @@ import asyncio
 
 logger = logging.getLogger(__name__)
 
+
 # Асинхронная функция для отправки сообщений
 async def async_send_telegram_notification(telegram_chat_id, message):
+    if telegram_chat_id is None:
+        logger.error("Telegram chat ID is missing. Cannot send message.")
+        return
+
     logger.info(f"Attempting to send message to {telegram_chat_id}")
     bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
     try:
@@ -15,11 +20,20 @@ async def async_send_telegram_notification(telegram_chat_id, message):
         logger.info(f"Message sent successfully to {telegram_chat_id}")
     except Exception as e:
         logger.error(f"Failed to send message to {telegram_chat_id}: {str(e)}")
+        raise e
 
 # Синхронная Celery задача, которая вызывает асинхронную функцию через asyncio.run()
 @shared_task
 def send_telegram_notification(telegram_chat_id, message):
-    asyncio.run(async_send_telegram_notification(telegram_chat_id, message))
+    if telegram_chat_id is None:
+        logger.error(f"Invalid telegram_chat_id: {telegram_chat_id}")
+        return
+    try:
+        asyncio.run(async_send_telegram_notification(telegram_chat_id, message))
+    except Exception as e:
+        logger.error(f"Failed to process telegram_chat_id: {telegram_chat_id}: {str(e)}")
+
+
 
 # Синхронная Celery задача для отправки напоминаний
 @shared_task
